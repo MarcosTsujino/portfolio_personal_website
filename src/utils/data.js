@@ -44,18 +44,17 @@ export const WORK_EXPERIENCE = [
         title: "Electronics Technician",
         date: " May 2018 - Present",
         responsabilities:[
-            "lorem ipsum lorem ipsum lorem ipsum",
-            "lorem ipsum lorem ipsum lorem ipsum",
-            "lorem ipsum lorem ipsum lorem ipsum",
+            "assembly of printed circuit board assembly",
+            "maintenance of printed circuit board assembly",
+            "Experience with soldering SMD and PTH components.",
         ],
     },
     {
         title: "Intern",
         date: "April 2017 - April 2018",
         responsabilities: [
-            "lorem ipsum lorem ipsum lorem ipsum",
-            "lorem ipsum lorem ipsum lorem ipsum",
-            "lorem ipsum lorem ipsum lorem ipsum",
+            "separation of components for equipment assembly",
+            "gravação dos processadores com o software",
         ],
     },
 ];
