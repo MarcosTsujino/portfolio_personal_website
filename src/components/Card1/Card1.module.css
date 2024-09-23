@@ -1,0 +1,65 @@
+.card {
+    width: 200px;
+    height: 200px;
+    background-color: var(--soft-white);
+    color: var(--gray);
+    border-radius: 8px;
+    box-shadow: 5px 5px 10px #22222270;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.cardHovered{
+    transform: scale(1.1);
+    position: relative;
+    width: 200px;
+    height: 200px;
+    text-align: justify;
+}
+
+.content {
+    padding: 10px;
+}
+
+.content img {
+    align-items: center;
+    
+}
+
+.imageVisible {
+    display: block;
+}
+
+.imageHidden {
+    display: none;
+}
+
+.texVisible {
+    display: block;
+}
+
+.textHidden {
+    display: none;
+}
+
+.card h3 {
+    color: black;
+    text-align: center;
+}
+
+.card img {
+    color: #555;
+    height: 130px;
+    width: 130px;
+    margin: 2rem;
+    justify-content: center;
+}
+
+.card p {
+    font-size: 11px;
+
+}

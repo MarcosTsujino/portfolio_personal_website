@@ -1,0 +1,87 @@
+.home {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.home img {
+    height: 300px;
+    width: 300px; /* Tornar largura e altura iguais para um círculo perfeito */
+    border-radius: 50%; /* Faz a imagem ficar circular */
+    object-fit: cover; /* Garante que a imagem se ajuste dentro do círculo sem distorções */
+}
+
+.home p {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.home span {
+    color: var(--purple);
+}
+
+.btn {
+    width: 250px;
+    height: 50px;
+    font-size: 1.125rem;
+    font-weight: bold;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    margin-bottom: 2rem;
+}
+
+.btn_purple {
+    background-color: var(--purple);
+    color: var(--white);
+    margin-left: 35px;
+}
+
+.btn_purple:hover {
+    background-color: var(--terceary);
+}
+
+/* responsividade */
+@media (max-width: 768px) {
+    .home {
+        max-height: 100%;
+        flex-direction: column;
+    }
+
+    .home p {
+        font-size: 2rem;
+    }
+
+    .home img {
+        max-height: 35vh;
+        width: auto;
+        border-radius: 50%; /* Continua circular em telas menores */
+        padding-bottom: 10px;
+    }
+}
+
+@media (max-width: 425px) {
+    .home {
+        max-height: 100%;
+        flex-direction: column;
+        position: relative;
+    }
+    
+    .home p {
+        font-size: 2rem;
+    }
+    
+    .home img {
+        max-width: 100%;
+        height: auto;
+        padding-inline: 2.5rem;
+        border-radius: 50%; /* Permite que a imagem continue circular em tamanhos menores */
+    }
+}
