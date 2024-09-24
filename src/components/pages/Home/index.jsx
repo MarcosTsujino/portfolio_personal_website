@@ -15,7 +15,7 @@ function Home() {
             </Link>
           </div>
           <figure>
-            <img className={styles.img_home} src="./src/assets/1723748707096.jpg" alt="Photo" />
+            <img className={styles.img_home} src="./src/assets/photo.jpg" alt="Photo" />
           </figure>
 
         </section>
