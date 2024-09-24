@@ -8,9 +8,9 @@
 
 .home img {
     height: 300px;
-    width: 300px; /* Tornar largura e altura iguais para um círculo perfeito */
-    border-radius: 50%; /* Faz a imagem ficar circular */
-    object-fit: cover; /* Garante que a imagem se ajuste dentro do círculo sem distorções */
+    width: 300px; 
+    border-radius: 50%; 
+    object-fit: cover; 
 }
 
 .home p {
@@ -82,6 +82,6 @@
         max-width: 100%;
         height: auto;
         padding-inline: 2.5rem;
-        border-radius: 50%; /* Permite que a imagem continue circular em tamanhos menores */
+        border-radius: 50%; 
     }
 }
