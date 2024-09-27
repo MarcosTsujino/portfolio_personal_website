@@ -18,7 +18,7 @@
     transform: scale(1.1); /* Aumenta o tamanho do card ao passar o mouse */
     position: relative;
     width: 300px; /* Mantém o tamanho do card consistente durante o hover */
-    height: 300px;
+    height: 250px;
     text-align: justify;
     z-index: 1;
 }
