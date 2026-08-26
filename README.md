@@ -1,4 +1,4 @@
-# Portfólio Pessoal — Marcos Yoshio Nakao Tsujino
+# Portfólio Pessoal — Marcos Tsujino
 
 Site pessoal desenvolvido para apresentar minha trajetória profissional, habilidades técnicas e projetos.
 
