@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaCogs } from "react-icons/fa";
 import styles from "./CardEngenharia.module.css";
 
 function CardSuporte() {
@@ -13,11 +14,7 @@ function CardSuporte() {
       <div className={styles.content}>
         <h3>Engenharia</h3>
 
-        <img
-          src="Engenharia.png"
-          alt="Engenharia"
-          className={isHovered ? styles.imageHidden : styles.imageVisible}
-        />
+        <FaCogs aria-label="Engenharia" className={`${styles.icon} ${isHovered ? styles.imageHidden : styles.imageVisible}`} />
 
         <p className={isHovered ? styles.texVisible : styles.textHidden}>
           [Em breve]

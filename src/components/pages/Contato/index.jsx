@@ -1,6 +1,6 @@
 import styles from './Contato.module.css'
 import { GoMail } from 'react-icons/go'
-import { FaGithub, FaLinkedin, FaMapMarkerAlt, FaPhoneAlt, FaWhatsapp } from 'react-icons/fa'
+import { FaGithub, FaLinkedin, FaWhatsapp } from 'react-icons/fa'
 import { useState } from 'react'
 
 function Contato() {
@@ -12,7 +12,7 @@ function Contato() {
     e.preventDefault()
 
     const phoneNumber = '5519996423909' 
-    const whatsappMessage = `Olá! Meu nome é ${name}. ${message}`
+    const whatsappMessage = `Olá! Meu nome é ${name}. ${message}\n\nMeu e-mail: ${email}`
 
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`
 
@@ -83,7 +83,7 @@ function Contato() {
             <FaWhatsapp className={styles.icone} color='#25d366' />
           </a>
 
-          <a href='https://www.linkedin.com/in/marcos-yoshio-n-b9868a13b/' target='_blank' rel='noopener noreferrer'>
+          <a href='https://www.linkedin.com/in/marcosyoshio-n-b9868a13b' target='_blank' rel='noopener noreferrer'>
             <FaLinkedin className={styles.icone} color='blue' />
           </a>
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaMicrochip } from "react-icons/fa";
 import { Link } from 'react-router-dom'
 import styles from "./Card.module.css";
 
@@ -16,10 +17,7 @@ function Card() {
         <div className={styles.content}>
           <h3>Técnico</h3>
 
-          <img 
-          src="tecnico.png" 
-          alt="Técnico"
-          className={isHovered ? styles.imageHidden : styles.imageVisible} />
+          <FaMicrochip aria-label="Técnico" className={`${styles.icon} ${isHovered ? styles.imageHidden : styles.imageVisible}`} />
 
           <p className={isHovered ? styles.texVisible : styles.textHidden}>
             [Em breve]
