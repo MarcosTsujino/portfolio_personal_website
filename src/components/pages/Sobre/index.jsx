@@ -1,29 +1,65 @@
 import styles from './Sobre.module.css'
 
+const ferramentas = [
+    {
+        titulo: 'Desenvolvimento',
+        itens: ['Python', 'OpenCV', 'JavaScript', 'React', 'HTML', 'CSS', 'Git e GitHub'],
+    },
+    {
+        titulo: 'Engenharia e dados',
+        itens: ['AutoCAD 2D e 3D', 'SolidWorks', 'Power BI', 'Excel', 'TOTVS Protheus'],
+    },
+    {
+        titulo: 'Idiomas',
+        itens: ['Português', 'Inglês', 'Espanhol'],
+    },
+]
+
 function Sobre() {
     return (
         <section className={styles.sobre}>
-            
             <div className={styles.banner}>
                 <div className={styles.texto}>
-                    <h2>Sobre</h2>   
-                    <p>
-                        Olá! Meu nome é Marcos, sou Engenheiro de Controle e Automação, em transição de carreira para o desenvolvimento web. Atualmente, estou cursando Análise e Desenvolvimento de Sistemas no Centro Universitário FMU, com previsão de formatura para dezembro de 2024.
-                    </p>
-                    <p>
-Minha trajetória profissional começou na área de eletrônica, onde adquiri uma sólida experiência como Técnico em Eletrônica na I/O Eletrônica. Durante esse período, desenvolvi habilidades em manutenção de equipamentos eletrônicos, montagem de placas de circuito impresso e resolução de problemas técnicos. A partir dessa base, comecei a expandir meus conhecimentos em desenvolvimento web, me especializando em tecnologias como HTML5, CSS3, JavaScript, React.js e Python 3.
-</p>
-<p>
-                    Tenho uma paixão por aprender novas tecnologias e criar soluções inovadoras. Além de ser certificado em ferramentas como AutoCAD 2D e 3D, SolidWorks, Power BI e Excel, também sou fluente em inglês, o que me permite colaborar com projetos internacionais.
-</p>
-<p>Busco oportunidades para aplicar meus conhecimentos e crescer na área de desenvolvimento front-end, utilizando minhas habilidades técnicas para criar experiências digitais intuitivas e eficientes.
-                    </p>
-                    
-                </div> 
-            </div>            
+                    <h2>Sobre</h2>
 
+                    <p>
+                        Olá! Sou o Marcos, desenvolvedor em formação com base sólida em eletrônica e
+                        instrumentação. Sou bacharel em Engenharia de Controle e Automação (UNIP) e
+                        tecnólogo em Análise e Desenvolvimento de Sistemas (FMU).
+                    </p>
+
+                    <p>
+                        Há mais de oito anos trabalho com eletrônica e manutenção em campo. Comecei na
+                        I/O Eletrônica, com sistemas de automação para parques de diversões, e hoje sou
+                        técnico em eletrônica na Didai Tecnologia, em Campinas. Lá faço reparo em nível
+                        de componente, suporte regulatório (ANATEL), documentação técnica e atendimento
+                        a clientes no Brasil e no exterior, incluindo Chile e Costa Rica.
+                    </p>
+
+                    <p>
+                        Nos últimos anos tenho levado esse conhecimento para o software: ferramentas em
+                        Python, engenharia reversa de protocolos Bluetooth Low Energy, visão
+                        computacional com OpenCV e interfaces em React. Busco oportunidades como
+                        desenvolvedor, principalmente onde software e hardware se encontram: IoT,
+                        automação, instrumentação e integração de sistemas.
+                    </p>
+
+                    <h3 className={styles.subtitulo}>Ferramentas</h3>
+                    <dl className={styles.ferramentas}>
+                        {ferramentas.map((grupo) => (
+                            <div key={grupo.titulo} className={styles.grupo}>
+                                <dt>{grupo.titulo}</dt>
+                                <dd>
+                                    {grupo.itens.map((item) => (
+                                        <span key={item} className={styles.chip}>{item}</span>
+                                    ))}
+                                </dd>
+                            </div>
+                        ))}
+                    </dl>
+                </div>
+            </div>
         </section>
-            
     )
 }
 

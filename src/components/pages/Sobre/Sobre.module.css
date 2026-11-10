@@ -10,28 +10,65 @@
 
 .banner {
     display: flex;
+    justify-content: center;
     height: 100%;
     width: 100%;
 }
 
-.texto{
+.texto {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     color: var(--black);
     margin: 10px;
+    max-width: 760px;
+    width: 100%;
 }
 
 .texto h2 {
     font-size: 1.5rem;
+    align-self: center;
+    margin-bottom: 1.5rem;
 }
 
-.texto p {
-    margin-bottom: 1rem;
-}
-
-.texto p {
+.sobre .texto p {
+    margin: 0 0 1rem;
     font-size: 18px;
+    line-height: 1.6;
+}
+
+.subtitulo {
+    margin: 1rem 0 0.75rem;
+    font-size: 1.2rem;
+}
+
+.ferramentas {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    width: 100%;
+}
+
+.grupo dt {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 0.4rem;
+}
+
+.grupo dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.chip {
+    background-color: var(--soft-white);
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    padding: 0.25rem 0.8rem;
+    font-size: 0.9rem;
 }
 
 /* media queries */
@@ -46,33 +83,25 @@
         width: 100%;
     }
 
+    .texto {
+        padding: 0 1rem;
+    }
 
     .texto h2 {
         font-size: 1.3rem;
-        padding: 0rem;
     }
 
-    .texto p {
-        font-size: 1.2rem;
+    .sobre .texto p {
+        font-size: 1.05rem;
     }
 }
 
 @media (max-width: 424px) {
-    .banner{
-        width: 100%;
-        height: 100%;
-    }
-
-    .texto h2{
+    .texto h2 {
         font-size: 1.5rem;
-        margin-top: -2rem;
     }
 
-    .texto p{
+    .sobre .texto p {
         font-size: 16px;
-        margin-left: 2rem;
-        margin-right: 2rem;
-        text-align: justify;
     }
-
 }
