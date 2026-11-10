@@ -1,0 +1,178 @@
+.calculadora {
+    width: 100%;
+    max-width: 900px;
+    padding-inline: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: var(--black);
+}
+
+.calculadora h2 {
+    font-size: 1.875rem;
+    line-height: 1.3;
+    text-align: center;
+}
+
+section.calculadora p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.intro {
+    color: #444;
+}
+
+.controles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.botao,
+.botaoSecundario {
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 0.7rem 1.2rem;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 2px solid var(--purple);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.botao {
+    background-color: var(--purple);
+    color: var(--white);
+}
+
+.botaoSecundario {
+    background-color: transparent;
+    color: var(--purple);
+}
+
+.botao:hover,
+.botaoSecundario:hover {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    color: var(--white);
+}
+
+.formato {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.formato code {
+    background-color: var(--soft-white);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+}
+
+.erro {
+    color: #b00020;
+    font-weight: bold;
+}
+
+.origem {
+    font-size: 0.95rem;
+}
+
+.limites {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.limites label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.limites input {
+    width: 11rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 1rem;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+}
+
+.resultados {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+}
+
+.resultados div {
+    background-color: var(--soft-white);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    box-shadow: 2px 2px 6px #22222230;
+}
+
+.resultados dt {
+    font-size: 0.8rem;
+    color: #555;
+}
+
+.resultados dd {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.resultados .periodo {
+    font-size: 0.9rem;
+}
+
+.grafico {
+    width: 100%;
+    height: auto;
+    background-color: var(--white);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.faixa {
+    fill: #3e409522;
+}
+
+.grade {
+    stroke: #e3e3e3;
+    stroke-width: 1;
+}
+
+.limite {
+    stroke: #3e4095;
+    stroke-width: 1;
+    stroke-dasharray: 5 4;
+}
+
+.linha {
+    fill: none;
+    stroke: #0f3460;
+    stroke-width: 1.6;
+}
+
+.pontoFora {
+    fill: #e94560;
+}
+
+.rotulo {
+    fill: #555;
+    font-size: 11px;
+    font-family: Verdana, sans-serif;
+}
+
+@media (max-width: 600px) {
+    .rotulo {
+        font-size: 22px;
+    }
+}
+
+.nota {
+    font-size: 0.85rem;
+    color: #666;
+}
