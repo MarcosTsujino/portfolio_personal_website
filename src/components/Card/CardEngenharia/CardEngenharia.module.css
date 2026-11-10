@@ -69,3 +69,10 @@
     margin: 2rem 1.5rem;
     border-radius: 5px;
 }
+
+.icon {
+    width: 80px;
+    height: 80px;
+    margin: 2rem auto;
+    color: var(--purple);
+}

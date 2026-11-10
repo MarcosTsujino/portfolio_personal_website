@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaCode } from "react-icons/fa";
 import styles from "./CardDesenvolvedor.module.css";
 
 function CardClube() {
@@ -13,11 +14,7 @@ function CardClube() {
       <div className={styles.content}>
         <h3>Desenvolvedor Front-end</h3>
 
-        <img
-          src="front_end.png"
-          alt="Desenvolvedor Front-end"
-          className={isHovered ? styles.imageHidden : styles.imageVisible}
-        />
+        <FaCode aria-label="Desenvolvedor Front-end" className={`${styles.icon} ${isHovered ? styles.imageHidden : styles.imageVisible}`} />
 
         <p className={isHovered ? styles.texVisible : styles.textHidden}>
           [Em breve]

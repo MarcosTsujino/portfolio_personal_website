@@ -13,7 +13,7 @@ function Header () {
         <header className={styles.header}>
             <Link to="/">
                 <span>
-                    <img src="../../logo.png" alt="logo" />
+                    <img src="/logo.svg" alt="Marcos Tsujino" />
                 </span>
             </Link>
             <nav 

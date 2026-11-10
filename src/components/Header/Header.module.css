@@ -17,7 +17,9 @@
 }
 
 .header span img {
-    width: 200px;
+    height: 28px;
+    width: auto;
+    display: block;
 }
 
 .header a {
