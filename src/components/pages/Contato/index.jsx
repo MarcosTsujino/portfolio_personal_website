@@ -28,7 +28,10 @@ function Contato() {
     <>
       <section className={styles.contato}>
         <h3>Entre em contato</h3>
-        <p>Para que possamos tirar suas dúvidas.</p>
+        <p>
+          Quer me chamar para uma vaga ou conversar sobre um projeto? Preencha o formulário: ao enviar,
+          o WhatsApp abre com a mensagem pronta. Se preferir, use um dos links abaixo.
+        </p>
 
         {/* Formulário */}
         <form onSubmit={sendWhatsAppMessage} className={styles.form}>
@@ -69,25 +72,25 @@ function Contato() {
           </div>
 
           <button type="submit" className={styles.submitButton}>
-            Enviar
+            Enviar pelo WhatsApp
           </button>
         </form>
 
         {/* Ícones de contato */}
         <div className={styles.icones}>
-          <a href='mailto:marcos.yoshio10@gmail.com' target='_blank' rel='noopener noreferrer'>
+          <a href='mailto:marcos.yoshio10@gmail.com' aria-label='E-mail'>
             <GoMail className={styles.icone} color='red' />
           </a>
 
-          <a href='https://wa.me/5519996423909' target='_blank' rel="noopener noreferrer">
+          <a href='https://wa.me/5519996423909' target='_blank' rel='noopener noreferrer' aria-label='WhatsApp'>
             <FaWhatsapp className={styles.icone} color='#25d366' />
           </a>
 
-          <a href='https://www.linkedin.com/in/marcosyoshio-n-b9868a13b' target='_blank' rel='noopener noreferrer'>
+          <a href='https://www.linkedin.com/in/marcosyoshio-n-b9868a13b' target='_blank' rel='noopener noreferrer' aria-label='LinkedIn'>
             <FaLinkedin className={styles.icone} color='blue' />
           </a>
 
-          <a href='https://github.com/MarcosTsujino' target='_blank' rel='noopener noreferrer'>
+          <a href='https://github.com/MarcosTsujino' target='_blank' rel='noopener noreferrer' aria-label='GitHub'>
             <FaGithub className={styles.icone} color='black'/>
           </a>
 
