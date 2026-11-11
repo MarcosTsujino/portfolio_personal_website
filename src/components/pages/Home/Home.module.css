@@ -23,6 +23,20 @@
     color: var(--purple);
 }
 
+.home .subtitulo {
+    font-size: 1.125rem;
+    font-weight: normal;
+    max-width: 320px;
+    margin: 0 0 1.5rem 35px;
+}
+
+.acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
 .btn {
     width: 250px;
     height: 50px;
@@ -35,7 +49,6 @@
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    margin-bottom: 2rem;
 }
 
 .btn_purple {
@@ -46,6 +59,18 @@
 
 .btn_purple:hover {
     background-color: var(--terceary);
+}
+
+.btn_outline {
+    background-color: transparent;
+    color: var(--purple);
+    border: 2px solid var(--purple);
+    margin-left: 35px;
+}
+
+.btn_outline:hover {
+    background-color: var(--purple);
+    color: var(--white);
 }
 
 /* responsividade */

@@ -10,12 +10,21 @@ function Home() {
               <span>Marcos</span> <br />
               Tsujino
             </p>
-            <Link to="/sobre" className={`${styles.btn} ${styles.btn_purple} `}>
-              Saiba mais
-            </Link>
+            <p className={styles.subtitulo}>
+              Desenvolvedor com base em eletrônica e instrumentação.
+              Python, React e automação.
+            </p>
+            <div className={styles.acoes}>
+              <Link to="/projetos" className={`${styles.btn} ${styles.btn_purple}`}>
+                Ver projetos
+              </Link>
+              <Link to="/sobre" className={`${styles.btn} ${styles.btn_outline}`}>
+                Saiba mais
+              </Link>
+            </div>
           </div>
           <figure>
-            <img className={styles.img_home} src="/assets/photo.jpg" alt="Foto de Marcos Tsujino" />
+            <img className={styles.img_home} src="/assets/photo.jpg" alt="Ilustração de Marcos Tsujino" />
           </figure>
 
         </section>
@@ -24,4 +33,3 @@ function Home() {
 }
 
 export default Home;
-
