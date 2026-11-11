@@ -74,7 +74,7 @@ function Calculadora() {
                 <>
                     <p className={styles.origem}>
                         Origem: <strong>{origem}</strong> · {resultado.n} leituras
-                        {ignoradas > 0 && ` · ${ignoradas} linha(s) ignorada(s) (cabeçalho ou inválidas)`}
+                        {ignoradas > 0 && ` · ${ignoradas} linha(s) inválida(s) ignorada(s)`}
                     </p>
 
                     <div className={styles.limites}>
