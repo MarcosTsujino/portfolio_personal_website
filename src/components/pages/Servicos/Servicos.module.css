@@ -1,38 +1,68 @@
 .servicos {
-    padding-block: 2.5rem;
+    width: 100%;
+    max-width: 960px;
+    padding-inline: 1rem;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 1.25rem;
     color: var(--black);
 }
 
 .servicos h2 {
     font-size: 1.875rem;
     line-height: 1.3;
-    margin-top: -4rem;
     text-align: center;
-    padding-bottom: 1rem;
+}
+
+section.servicos p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+section.servicos .intro {
+    text-align: center;
+    color: #444;
+    max-width: 640px;
 }
 
 .lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    width: 100%;
+}
+
+.card {
+    background-color: var(--soft-white);
+    border-radius: 8px;
+    box-shadow: 5px 5px 10px #22222270;
+    padding: 1.5rem;
     display: flex;
-    justify-content: space-evenly;
-    gap: 1.5rem;
-    align-items: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-@media (max-width: 768px) {
-    .servicos h2 {
-        margin-top: -3rem;
-    }
+.card h3 {
+    font-size: 1.15rem;
+    color: var(--primary);
 }
 
+section.servicos .card p {
+    font-size: 1rem;
+    color: #333;
+}
 
-@media (max-width: 320px) {    
-    .lista {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-    }
+.botao {
+    background-color: var(--purple);
+    color: var(--white);
+    border-radius: 8px;
+    padding: 0.8rem 1.6rem;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.botao:hover {
+    background-color: var(--secondary);
 }

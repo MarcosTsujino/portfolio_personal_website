@@ -7,7 +7,6 @@ import Calculadora from "./components/pages/Calculadora"
 import Contato from "./components/pages/Contato"
 import Page404 from "./components/pages/Page404";
 import PaginaBase from './components/pages/PaginaBase'
-import Tecnico from './components/pages/Tecnico'
 
 function AppRoutes () {
     return (
@@ -21,7 +20,7 @@ function AppRoutes () {
                     <Route path="/servicos" element={ <Servicos /> }></Route>
                     <Route path="/contato" element={ <Contato /> }></Route>
                     <Route path="/page404" element={ <Page404 /> }></Route>
-                    <Route path="/Tecnico" element={ <Tecnico />}></Route>
+                    <Route path="*" element={ <Page404 /> }></Route>
                 </Route>
             </Routes>
         </BrowserRouter>

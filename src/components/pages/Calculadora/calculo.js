@@ -31,11 +31,12 @@ export function lerCsv(texto) {
     const separador = usaPontoEVirgula ? ';' : ','
     const leituras = []
     let ignoradas = 0
-    for (const linha of linhas) {
-        const colunas = linha.split(separador)
+    for (let i = 0; i < linhas.length; i += 1) {
+        const colunas = linhas[i].split(separador)
         const temp = parseNumero(colunas[colunas.length - 1], usaPontoEVirgula)
         if (Number.isNaN(temp)) {
-            ignoradas += 1
+            // a primeira linha inválida costuma ser o cabeçalho: não conta como erro
+            if (i > 0) ignoradas += 1
             continue
         }
         const data = colunas.length > 1 ? parseData(colunas[0]) : null

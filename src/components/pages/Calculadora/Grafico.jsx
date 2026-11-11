@@ -40,10 +40,11 @@ function Grafico({ leituras, limMin, limMax }) {
         }
     }
 
+    const passoIdeal = (maior - menor) / 5
+    const passoMarca = [0.5, 1, 2, 5, 10, 20, 50].filter((p) => p <= passoIdeal).pop() || 0.5
     const marcas = []
-    const quantidade = 5
-    for (let k = 0; k <= quantidade; k += 1) {
-        marcas.push(menor + ((maior - menor) * k) / quantidade)
+    for (let v = Math.ceil(menor / passoMarca) * passoMarca; v <= maior; v += passoMarca) {
+        marcas.push(v)
     }
 
     const primeira = leituras[0].data
@@ -67,7 +68,7 @@ function Grafico({ leituras, limMin, limMax }) {
                 <g key={valor}>
                     <line x1={M.esq} x2={LARGURA - M.dir} y1={y(valor)} y2={y(valor)} className={styles.grade} />
                     <text x={M.esq - 6} y={y(valor) + 4} textAnchor="end" className={styles.rotulo}>
-                        {valor.toFixed(1).replace('.', ',')}
+                        {String(valor).replace('.', ',')}
                     </text>
                 </g>
             ))}
