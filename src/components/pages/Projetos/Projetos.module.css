@@ -49,6 +49,14 @@
     font-style: italic;
 }
 
+.imagem {
+    width: 100%;
+    max-width: 640px;
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
 .tecnologias {
     display: flex;
     flex-wrap: wrap;
