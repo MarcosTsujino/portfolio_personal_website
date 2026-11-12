@@ -18,6 +18,24 @@ const projetos = [
         ],
     },
     {
+        titulo: 'Medidor de objetos por foto',
+        problema:
+            'Medir objetos a partir de uma foto, sem régua nem paquímetro, usando uma moeda de R$ 1 como referência de tamanho.',
+        feito:
+            'Programa em Python com OpenCV que detecta os contornos, reconhece a moeda pela circularidade, calcula a escala em pixels por milímetro e mede largura e altura de cada objeto, mesmo girado. Tem linha de comando, testes automatizados com imagens de medidas conhecidas (erro em torno de 1 %) e integração contínua no GitHub Actions.',
+        imagem: {
+            src: '/assets/projetos/medidor-objetos.jpg',
+            alt: 'Foto com uma moeda e três objetos, cada um contornado e com suas medidas em milímetros',
+        },
+        tecnologias: ['Python', 'OpenCV', 'NumPy', 'pytest', 'GitHub Actions'],
+        acoes: [
+            {
+                texto: 'Ver código no GitHub',
+                href: 'https://github.com/MarcosTsujino/medidor-objetos-opencv',
+            },
+        ],
+    },
+    {
         titulo: 'Este portfólio',
         problema: 'Site pessoal com meu perfil, trajetória e projetos.',
         feito:
@@ -42,6 +60,16 @@ function Projetos() {
                         <h3>{projeto.titulo}</h3>
                         <p className={styles.problema}>{projeto.problema}</p>
                         <p>{projeto.feito}</p>
+                        {projeto.imagem && (
+                            <img
+                                className={styles.imagem}
+                                src={projeto.imagem.src}
+                                alt={projeto.imagem.alt}
+                                loading="lazy"
+                                width="960"
+                                height="640"
+                            />
+                        )}
                         <ul className={styles.tecnologias}>
                             {projeto.tecnologias.map((tec) => (
                                 <li key={tec} className={styles.chip}>{tec}</li>
