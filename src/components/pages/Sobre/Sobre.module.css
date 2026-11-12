@@ -37,6 +37,24 @@
     line-height: 1.6;
 }
 
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    padding: 0 1.5rem;
+    margin-top: 0.5rem;
+    border-radius: 8px;
+    background-color: var(--purple);
+    color: var(--white);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.botao:hover {
+    background-color: var(--terceary);
+}
+
 .subtitulo {
     margin: 1rem 0 0.75rem;
     font-size: 1.2rem;
