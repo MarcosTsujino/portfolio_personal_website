@@ -44,6 +44,14 @@ function Sobre() {
                         automação, instrumentação e integração de sistemas.
                     </p>
 
+                    <a
+                        className={styles.botao}
+                        href="/curriculo-marcos-tsujino.pdf"
+                        download
+                    >
+                        Baixar currículo (PDF)
+                    </a>
+
                     <h3 className={styles.subtitulo}>Ferramentas</h3>
                     <dl className={styles.ferramentas}>
                         {ferramentas.map((grupo) => (
