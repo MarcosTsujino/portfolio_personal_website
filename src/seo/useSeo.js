@@ -2,9 +2,18 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { dadosDaPagina } from './paginas'
 
+// Atualiza a tag; se ela não existir (o 404.html pré-renderizado não tem canonical
+// nem og:url), cria. Sem isso, quem entra por um link quebrado e navega pelo menu
+// chegaria às páginas válidas sem canonical.
 function definirMeta(seletor, atributo, valor) {
-    const elemento = document.head.querySelector(seletor)
-    if (elemento) elemento.setAttribute(atributo, valor)
+    let elemento = document.head.querySelector(seletor)
+    if (!elemento) {
+        const [, tag, chave, nome] = seletor.match(/^(\w+)\[(\w+)="([^"]+)"\]$/)
+        elemento = document.createElement(tag)
+        elemento.setAttribute(chave, nome)
+        document.head.appendChild(elemento)
+    }
+    elemento.setAttribute(atributo, valor)
 }
 
 // Atualiza título, descrição, canonical e Open Graph a cada troca de rota

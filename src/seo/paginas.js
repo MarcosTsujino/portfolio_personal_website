@@ -47,5 +47,5 @@ export function dadosDaPagina(caminho) {
     const pagina = PAGINAS[normal]
     return pagina
         ? { ...pagina, url: `${SITE}${normal}`, existe: true }
-        : { ...PAGINA_404, url: `${SITE}/`, existe: false }
+        : { ...PAGINA_404, url: `${SITE}${normal}`, existe: false }
 }

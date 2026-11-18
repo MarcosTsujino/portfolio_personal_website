@@ -6,6 +6,11 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
   { ignores: ['dist'] },
+  // scripts de build rodam no Node, não no navegador
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: globals.node, sourceType: 'module' },
+  },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
