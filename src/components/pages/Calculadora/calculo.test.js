@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { calcular, calcularMkt, detectarSeparador, dividirLinha, gerarExemplo, lerCsv, parseData, parseNumero } from './calculo'
+import { ERRO_VIRGULA_AMBIGUA, calcular, calcularMkt, detectarSeparador, dividirLinha, gerarExemplo, lerCsv, lerLimite, parseData, parseNumero, resumir } from './calculo'
 
 const leituras = (...temps) => temps.map((temp) => ({ temp, data: null }))
 
@@ -59,9 +59,37 @@ describe('lerCsv', () => {
         expect(avisos).toHaveLength(1)
     })
 
-    it('avisa quando "data,5,3" sem cabeçalho é ambíguo, em vez de errar calado', () => {
-        const { avisos } = lerCsv('2026-01-12 08:00:00,5,3\n2026-01-12 08:10:00,5,4')
-        expect(avisos).toHaveLength(1)
+    it('recusa "data,5,3" sem cabeçalho em vez de calcular com números errados', () => {
+        const r = lerCsv('2026-01-12 08:00:00,5,3\n2026-01-12 08:10:00,5,4')
+        expect(r.erro).toBe(ERRO_VIRGULA_AMBIGUA)
+        expect(r.leituras).toEqual([])
+    })
+
+    it('A: cabeçalho e vírgula decimal, com uma temperatura inteira no meio', () => {
+        const r = lerCsv('Data,Temp\n2026-01-12 08:00:00,5,3\n2026-01-12 08:10:00,6\n2026-01-12 08:20:00,5,4')
+        expect(r.leituras.map((x) => x.temp)).toEqual([5.3, 6, 5.4])
+        expect(r.avisos).toHaveLength(1)
+    })
+
+    it('C: outra coluna também com vírgula decimal vira erro, não 3 °C', () => {
+        const r = lerCsv('Data,Umid,Temp\n2026-01-12 08:00:00,45,2,5,3')
+        expect(r.erro).toBe(ERRO_VIRGULA_AMBIGUA)
+    })
+
+    it('F: uma coluna só com vírgula decimal e sem cabeçalho vira erro', () => {
+        expect(lerCsv('5,3\n5,4').erro).toBe(ERRO_VIRGULA_AMBIGUA)
+    })
+
+    it('sem cabeçalho, larguras diferentes revelam a vírgula decimal', () => {
+        const r = lerCsv('2026-01-12 08:00:00,5,3\n2026-01-12 08:10:00,6')
+        expect(r.leituras.map((x) => x.temp)).toEqual([5.3, 6])
+    })
+
+    it('colunas inteiras legítimas com cabeçalho continuam funcionando', () => {
+        const r = lerCsv('Data,Umid,Temp\n2026-01-12 08:00:00,45,5\n2026-01-12 08:10:00,46,6')
+        expect(r.leituras.map((x) => x.temp)).toEqual([5, 6])
+        expect(r.avisos).toEqual([])
+        expect(r.erro).toBeUndefined()
     })
 
     it('aceita valor entre aspas em CSV com vírgula', () => {
@@ -76,6 +104,31 @@ describe('lerCsv', () => {
 
     it('arquivo vazio não quebra', () => {
         expect(lerCsv('')).toEqual({ leituras: [], ignoradas: 0, avisos: [] })
+    })
+})
+
+describe('escolhas documentadas', () => {
+    it('com exatamente metade das linhas com ";" o separador fica ","', () => {
+        expect(detectarSeparador(['a;1', 'b,2'])).toBe(',')
+    })
+
+    it('"1,234" é lido como 1,234 (decimal), não como milhar: temperaturas não usam milhar', () => {
+        expect(parseNumero('1,234')).toBe(1.234)
+    })
+})
+
+describe('lerLimite', () => {
+    it('aceita vírgula, ponto e decimal pendente durante a digitação', () => {
+        expect(lerLimite('2,5')).toBe(2.5)
+        expect(lerLimite('2.')).toBe(2)
+        expect(lerLimite('2,')).toBe(2)
+        expect(lerLimite('-1')).toBe(-1)
+    })
+
+    it('vazio ou texto vira NaN', () => {
+        expect(lerLimite('')).toBeNaN()
+        expect(lerLimite('-')).toBeNaN()
+        expect(lerLimite('abc')).toBeNaN()
     })
 })
 
@@ -122,6 +175,16 @@ describe('calcular', () => {
         expect(r.fim).toEqual(d(20))
         expect(r.comData).toBe(2)
         expect(r.emOrdem).toBe(false)
+    })
+})
+
+describe('desempenho', () => {
+    it('com o resumo pronto, recalcular os limites em 200 mil leituras é rápido', () => {
+        const muitas = Array.from({ length: 200000 }, (_, i) => ({ temp: 5 + Math.sin(i / 50), data: null }))
+        const resumo = resumir(muitas)
+        const inicio = performance.now()
+        calcular(muitas, 2, 8, resumo)
+        expect(performance.now() - inicio).toBeLessThan(50)
     })
 })
 

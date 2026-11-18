@@ -1,16 +1,10 @@
 import { useMemo, useState } from 'react'
 import Grafico from './Grafico'
-import { calcular, gerarExemplo, lerCsv } from './calculo'
+import { calcular, gerarExemplo, lerCsv, lerLimite, resumir } from './calculo'
 import styles from './Calculadora.module.css'
 
 const numero = (valor, casas = 1) =>
     valor.toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas })
-
-// Aceita "2", "2,5" e "2.5"; campo vazio ou inválido vira NaN
-const lerLimite = (texto) => {
-    const normal = texto.trim().replace(',', '.')
-    return /^[-+]?\d+(\.\d+)?$/.test(normal) ? Number(normal) : NaN
-}
 
 const dataHora = (data) =>
     data.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
@@ -28,15 +22,16 @@ function Calculadora() {
     const limiteB = lerLimite(textoMax)
     const limitesValidos = Number.isFinite(limiteA) && Number.isFinite(limiteB)
 
-    const resultado = useMemo(() => calcular(leituras, limiteA, limiteB), [leituras, limiteA, limiteB])
+    const resumo = useMemo(() => resumir(leituras), [leituras])
+    const resultado = useMemo(() => calcular(leituras, limiteA, limiteB, resumo), [leituras, limiteA, limiteB, resumo])
 
     const carregar = (texto, nome) => {
         const lido = lerCsv(texto)
-        if (lido.leituras.length === 0) {
+        if (lido.erro || lido.leituras.length === 0) {
             setLeituras([])
             setOrigem('')
             setAvisos([])
-            setErro('Não encontrei leituras válidas. Confira se a temperatura está na última coluna de cada linha.')
+            setErro(lido.erro || 'Não encontrei leituras válidas. Confira se a temperatura está na última coluna de cada linha.')
             return
         }
         setErro('')
