@@ -113,6 +113,15 @@ export function resolverVirgulaDecimal(tabela, temCabecalho, escolha) {
 
 // Uma leitura por linha; temperatura na última coluna; data/hora na primeira (opcional)
 // opcoes.virgula: 'decimal' ou 'colunas', quando a pessoa já respondeu a pergunta
+// Faixa fisicamente possível para uma leitura de temperatura de datalogger. Abaixo do zero
+// absoluto não existe; acima de 1000 °C é quase certamente outra coisa na coluna
+// (timestamp, número de série, pressão) ou o código de falha do sensor, como -9999 ou 99999.
+export const TEMP_MIN = -273.15
+export const TEMP_MAX = 1000
+
+export const ERRO_SEM_TEMPERATURA =
+    'Os números da última coluna não parecem temperaturas (estão abaixo do zero absoluto ou acima de 1000 °C). Confira se a temperatura está mesmo na última coluna.'
+
 export function lerCsv(texto, opcoes = {}) {
     const linhas = texto.split(/\r?\n/).filter((l) => l.trim() !== '')
     const separador = detectarSeparador(linhas)
@@ -144,6 +153,7 @@ export function lerCsv(texto, opcoes = {}) {
     const leituras = []
     // linhas com colunas sobrando que não se encaixaram também contam como ignoradas
     let ignoradas = descartadas
+    let impossiveis = 0
     for (let i = 0; i < tabela.length; i += 1) {
         const colunas = tabela[i]
         const temp = parseNumero(colunas[colunas.length - 1])
@@ -152,10 +162,37 @@ export function lerCsv(texto, opcoes = {}) {
             if (i > 0) ignoradas += 1
             continue
         }
+        if (temp < TEMP_MIN || temp > TEMP_MAX) {
+            impossiveis += 1
+            continue
+        }
         const data = colunas.length > 1 ? parseData(colunas[0]) : null
         leituras.push({ temp, data })
     }
+    if (impossiveis > 0) {
+        if (leituras.length === 0) return { leituras, ignoradas, avisos, erro: ERRO_SEM_TEMPERATURA }
+        avisos.push(
+            `${impossiveis} leitura(s) com valor impossível para temperatura foram descartadas (por exemplo -9999, que alguns equipamentos gravam quando o sensor desconecta).`,
+        )
+    }
     return { leituras, ignoradas, avisos }
+}
+
+// Marcas do eixo de temperatura: um passo "redondo" (1, 2 ou 5 vezes uma potência de 10)
+// escolhido pela ordem de grandeza da faixa. Assim o eixo tem no máximo ~11 marcas para
+// qualquer entrada; uma lista fixa de passos travava o navegador com valores absurdos.
+export function marcasDaEscala(menor, maior) {
+    const faixa = maior - menor
+    if (!Number.isFinite(faixa) || faixa <= 0) return Number.isFinite(menor) ? [menor] : []
+    const bruto = faixa / 5
+    const escala = 10 ** Math.floor(Math.log10(bruto))
+    const passo = Math.max(0.5, [10, 5, 2, 1].map((m) => m * escala).find((p) => p <= bruto))
+    const inicio = Math.ceil(menor / passo)
+    const marcas = []
+    for (let i = inicio; i * passo <= maior; i += 1) {
+        marcas.push(Number((i * passo).toFixed(10)))
+    }
+    return marcas
 }
 
 export function calcularMkt(temps) {

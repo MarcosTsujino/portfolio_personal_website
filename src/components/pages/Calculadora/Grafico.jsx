@@ -1,3 +1,4 @@
+import { marcasDaEscala } from './calculo'
 import styles from './Calculadora.module.css'
 
 const LARGURA = 800
@@ -40,12 +41,7 @@ function Grafico({ leituras, limMin, limMax }) {
         }
     }
 
-    const passoIdeal = (maior - menor) / 5
-    const passoMarca = [0.5, 1, 2, 5, 10, 20, 50].filter((p) => p <= passoIdeal).pop() || 0.5
-    const marcas = []
-    for (let v = Math.ceil(menor / passoMarca) * passoMarca; v <= maior; v += passoMarca) {
-        marcas.push(v)
-    }
+    const marcas = marcasDaEscala(menor, maior)
 
     const primeira = leituras[0].data
     const ultima = leituras[n - 1].data

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ERRO_VIRGULA_AMBIGUA, calcular, calcularMkt, detectarSeparador, dividirLinha, gerarExemplo, lerCsv, lerLimite, parseData, parseNumero, resumir } from './calculo'
+import { ERRO_SEM_TEMPERATURA, ERRO_VIRGULA_AMBIGUA, TEMP_MAX, TEMP_MIN, calcular, calcularMkt, detectarSeparador, dividirLinha, gerarExemplo, lerCsv, lerLimite, marcasDaEscala, parseData, parseNumero, resumir } from './calculo'
 
 const leituras = (...temps) => temps.map((temp) => ({ temp, data: null }))
 
@@ -227,5 +227,55 @@ describe('gerarExemplo', () => {
         expect(r.excursoes).toBe(1)
         expect(r.emOrdem).toBe(true)
         expect(r.mkt).toBeCloseTo(5.14, 1)
+    })
+})
+
+describe('marcasDaEscala', () => {
+    it('mantém o eixo de sempre para a faixa típica', () => {
+        expect(marcasDaEscala(1, 13)).toEqual([2, 4, 6, 8, 10, 12])
+    })
+
+    it('invariante: no máximo 11 marcas e passo "redondo", qualquer que seja a faixa', () => {
+        for (let expoente = -2; expoente <= 12; expoente += 1) {
+            for (const fator of [1, 1.7, 3, 7.3]) {
+                const faixa = fator * 10 ** expoente
+                const marcas = marcasDaEscala(-faixa / 3, faixa)
+                expect(marcas.length).toBeGreaterThan(0)
+                expect(marcas.length).toBeLessThanOrEqual(11)
+                if (marcas.length > 1) {
+                    const passo = marcas[1] - marcas[0]
+                    const mantissa = Number((passo / 10 ** Math.floor(Math.log10(passo))).toFixed(6))
+                    expect([1, 2, 5]).toContain(mantissa)
+                }
+            }
+        }
+    })
+
+    it('faixa vazia ou inválida não entra em laço', () => {
+        expect(marcasDaEscala(5, 5)).toEqual([5])
+        expect(marcasDaEscala(NaN, 5)).toEqual([])
+        expect(marcasDaEscala(0, Infinity)).toEqual([0])
+    })
+})
+
+describe('plausibilidade das leituras', () => {
+    it('descarta valores fora da faixa física e avisa', () => {
+        const r = lerCsv('Data;Temp\n2026-01-12 08:00:00;-9999\n2026-01-12 08:01:00;99999\n2026-01-12 08:02:00;5,1')
+        expect(r.leituras.map((x) => x.temp)).toEqual([5.1])
+        expect(r.avisos[0]).toMatch(/2 leitura\(s\) com valor impossível/)
+    })
+
+    it('timestamp na coluna de temperatura vira erro, não 34 milhões de marcas', () => {
+        expect(lerCsv('Data;Temp\n2026-01-12 08:00:00;1768219200').erro).toBe(ERRO_SEM_TEMPERATURA)
+    })
+
+    it('os limites da faixa ainda são aceitos', () => {
+        const r = lerCsv(`${TEMP_MIN}\n${TEMP_MAX}`)
+        expect(r.leituras.map((x) => x.temp)).toEqual([TEMP_MIN, TEMP_MAX])
+    })
+
+    it('sem leitura abaixo do zero absoluto, o MKT não fica impossível', () => {
+        const { leituras } = lerCsv('Data;Temp\n2026-01-12 08:00:00;-300\n2026-01-12 08:01:00;5')
+        expect(calcularMkt(leituras.map((x) => x.temp))).toBeGreaterThan(TEMP_MIN)
     })
 })
