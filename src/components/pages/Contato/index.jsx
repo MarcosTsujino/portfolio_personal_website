@@ -35,7 +35,7 @@ function Contato() {
   return (
     <>
       <section className={styles.contato}>
-        <h3>Entre em contato</h3>
+        <h1>Entre em contato</h1>
         <p>
           Quer me chamar para uma vaga ou conversar sobre um projeto? Preencha o formulário: ao enviar,
           o WhatsApp abre com a mensagem pronta. Se preferir, use um dos links abaixo.

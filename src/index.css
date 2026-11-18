@@ -23,3 +23,26 @@
   --gray: #222222;
 
 }
+
+/* Estilo padrão de títulos e parágrafos. Antes estas regras estavam, sem querer,
+   dentro do Contato.module.css (seletor de elemento não ganha escopo em CSS Modules)
+   e já valiam para todas as páginas. Agora são explícitas. */
+h1 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+h2 {
+  color: #555;
+  margin-bottom: 15px;
+}
+
+p {
+  color: #666;
+  margin-bottom: 25px;
+}
+
+/* o <main> recebe foco pelo link "Pular para o conteúdo"; sem contorno ao clicar */
+main:focus {
+  outline: none;
+}

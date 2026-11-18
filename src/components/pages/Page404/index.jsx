@@ -5,7 +5,7 @@ function Page404() {
     return (
         <section className={styles.page404}>
             <span className={styles.texto_grande}>404</span>
-            <h2 className={styles.titulo2}>Página não encontrada</h2>
+            <h1 className={styles.titulo2}>Página não encontrada</h1>
             <p className={styles.descricao}>
                 O endereço que você abriu não existe ou mudou de lugar.
             </p>

@@ -5,11 +5,11 @@ function Home() {
     return (
         <section className={styles.home}>
           <div className={styles.apresentacao}>
-            <p>
-              Olá, eu sou <br /> 
+            <h1 className={styles.nome}>
+              Olá, eu sou <br />
               <span>Marcos</span> <br />
               Tsujino
-            </p>
+            </h1>
             <p className={styles.subtitulo}>
               Desenvolvedor com base em eletrônica e instrumentação.
               Python, React e automação.

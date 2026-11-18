@@ -13,13 +13,12 @@ function AppRoutes () {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={ <PaginaBase /> }>
-                    <Route index path="/" element={ <Home /> }></Route>
+                    <Route index element={ <Home /> }></Route>
                     <Route path="/sobre" element={ <Sobre /> }></Route>
                     <Route path="/projetos" element={ <Projetos /> }></Route>
                     <Route path="/calculadora" element={ <Calculadora /> }></Route>
                     <Route path="/servicos" element={ <Servicos /> }></Route>
                     <Route path="/contato" element={ <Contato /> }></Route>
-                    <Route path="/page404" element={ <Page404 /> }></Route>
                     <Route path="*" element={ <Page404 /> }></Route>
                 </Route>
             </Routes>
