@@ -25,7 +25,7 @@
     width: 100%;
 }
 
-.texto h2 {
+.texto h1 {
     font-size: 1.5rem;
     align-self: center;
     margin-bottom: 1.5rem;
@@ -105,7 +105,7 @@
         padding: 0 1rem;
     }
 
-    .texto h2 {
+    .texto h1 {
         font-size: 1.3rem;
     }
 
@@ -115,7 +115,7 @@
 }
 
 @media (max-width: 424px) {
-    .texto h2 {
+    .texto h1 {
         font-size: 1.5rem;
     }
 

@@ -9,7 +9,7 @@
     color: var(--black);
 }
 
-.servicos h2 {
+.servicos h1 {
     font-size: 1.875rem;
     line-height: 1.3;
     text-align: center;
@@ -43,7 +43,7 @@ section.servicos .intro {
     gap: 0.75rem;
 }
 
-.card h3 {
+.card h2 {
     font-size: 1.15rem;
     color: var(--primary);
 }

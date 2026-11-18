@@ -66,43 +66,54 @@ export const ERRO_VIRGULA_AMBIGUA =
 
 // Decide, linha a linha, se as duas últimas colunas formam um número com vírgula decimal.
 // A largura "normal" vem do cabeçalho; sem cabeçalho, da linha mais estreita.
-// Uma linha com exatamente uma coluna a mais e "inteiro,inteiro" no fim é vírgula decimal.
-// Qualquer coisa que não dê para decidir com segurança vira erro: melhor não calcular
-// do que mostrar uma temperatura errada.
-export function resolverVirgulaDecimal(tabela, temCabecalho) {
+// - linha com exatamente uma coluna a mais e "inteiro,inteiro" no fim: vírgula decimal;
+// - linha com colunas sobrando que não se encaixa: é uma linha ruim, vai para "ignoradas";
+// - se a maioria das linhas não se encaixa, o problema é do arquivo, não da linha: erro;
+// - sem cabeçalho e com todas as linhas iguais, "data,45,5" pode ser 45,5 °C ou duas
+//   colunas. Nenhuma regra resolve isso, então a pessoa escolhe (escolha = 'decimal' | 'colunas').
+export function resolverVirgulaDecimal(tabela, temCabecalho, escolha) {
     const inicioDados = temCabecalho ? 1 : 0
     const dados = tabela.slice(inicioDados)
-    if (dados.length === 0) return { tabela, juntadas: 0 }
+    if (dados.length === 0) return { tabela, juntadas: 0, descartadas: 0 }
 
+    const juntar = (c) => [...c.slice(0, -2), `${c[c.length - 2].trim()}.${c[c.length - 1].trim()}`]
     const larguras = dados.map((c) => c.length)
     const menor = larguras.reduce((a, b) => (b < a ? b : a), Infinity)
-    const base = temCabecalho ? tabela[0].length : menor
     const larguraUniforme = larguras.every((w) => w === menor)
 
-    // Sem cabeçalho e com todas as linhas da mesma largura, "x,5,3" pode ser 5,3 °C
-    // ou duas colunas inteiras. Não há como saber.
     if (!temCabecalho && larguraUniforme && dados.some(terminaComDoisInteiros)) {
-        return { erro: ERRO_VIRGULA_AMBIGUA }
+        if (escolha === 'colunas') return { tabela, juntadas: 0, descartadas: 0 }
+        if (escolha !== 'decimal') return { ambiguo: true }
+        let juntadas = 0
+        const novos = dados.map((c) => {
+            if (!terminaComDoisInteiros(c)) return c
+            juntadas += 1
+            return juntar(c)
+        })
+        return { tabela: novos, juntadas, descartadas: 0 }
     }
 
+    const base = temCabecalho ? tabela[0].length : menor
     let juntadas = 0
+    let descartadas = 0
     const novosDados = []
     for (const c of dados) {
         if (c.length <= base) {
             novosDados.push(c)
         } else if (c.length === base + 1 && terminaComDoisInteiros(c)) {
-            novosDados.push([...c.slice(0, -2), `${c[c.length - 2].trim()}.${c[c.length - 1].trim()}`])
+            novosDados.push(juntar(c))
             juntadas += 1
         } else {
-            // duas ou mais colunas sobrando: outra coluna também tem vírgula decimal
-            return { erro: ERRO_VIRGULA_AMBIGUA }
+            descartadas += 1
         }
     }
-    return { tabela: [...tabela.slice(0, inicioDados), ...novosDados], juntadas }
+    if (descartadas > dados.length / 2) return { erro: ERRO_VIRGULA_AMBIGUA }
+    return { tabela: [...tabela.slice(0, inicioDados), ...novosDados], juntadas, descartadas }
 }
 
 // Uma leitura por linha; temperatura na última coluna; data/hora na primeira (opcional)
-export function lerCsv(texto) {
+// opcoes.virgula: 'decimal' ou 'colunas', quando a pessoa já respondeu a pergunta
+export function lerCsv(texto, opcoes = {}) {
     const linhas = texto.split(/\r?\n/).filter((l) => l.trim() !== '')
     const separador = detectarSeparador(linhas)
     const avisos = []
@@ -110,21 +121,29 @@ export function lerCsv(texto) {
 
     let tabela = linhas.map((l) => dividirLinha(l, separador))
     const temCabecalho = Number.isNaN(parseNumero(tabela[0][tabela[0].length - 1]))
+    let descartadas = 0
 
     // CSV separado por vírgula com vírgula decimal sem aspas: "data,5,3".
     if (separador === ',') {
-        const resolvido = resolverVirgulaDecimal(tabela, temCabecalho)
+        const resolvido = resolverVirgulaDecimal(tabela, temCabecalho, opcoes.virgula)
+        if (resolvido.ambiguo) return { leituras: [], ignoradas: 0, avisos, ambiguo: true }
         if (resolvido.erro) return { leituras: [], ignoradas: 0, avisos, erro: resolvido.erro }
         tabela = resolvido.tabela
-        if (resolvido.juntadas > 0) {
+        descartadas = resolvido.descartadas
+        if (opcoes.virgula === 'colunas') {
+            avisos.push('Conforme sua escolha, tratei as vírgulas como separadores de coluna: a temperatura é o último número de cada linha.')
+        } else if (resolvido.juntadas > 0) {
             avisos.push(
-                `O arquivo usa vírgula tanto para separar colunas quanto como decimal; interpretei ${resolvido.juntadas} valor(es) como "5,3" = 5,3 °C.`,
+                opcoes.virgula === 'decimal'
+                    ? `Conforme sua escolha, tratei a última vírgula de cada linha como decimal (${resolvido.juntadas} valor(es)).`
+                    : `O arquivo usa vírgula tanto para separar colunas quanto como decimal; interpretei ${resolvido.juntadas} valor(es) como "5,3" = 5,3 °C.`,
             )
         }
     }
 
     const leituras = []
-    let ignoradas = 0
+    // linhas com colunas sobrando que não se encaixaram também contam como ignoradas
+    let ignoradas = descartadas
     for (let i = 0; i < tabela.length; i += 1) {
         const colunas = tabela[i]
         const temp = parseNumero(colunas[colunas.length - 1])

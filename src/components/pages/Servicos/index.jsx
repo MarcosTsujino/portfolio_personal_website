@@ -22,7 +22,7 @@ const servicos = [
 function Servicos() {
     return (
         <section className={styles.servicos}>
-            <h2>Serviços</h2>
+            <h1>Serviços</h1>
             <p className={styles.intro}>
                 Atendo projetos pontuais de automação e integração, principalmente onde software e hardware se
                 encontram.
@@ -30,7 +30,7 @@ function Servicos() {
             <div className={styles.lista}>
                 {servicos.map((servico) => (
                     <article key={servico.titulo} className={styles.card}>
-                        <h3>{servico.titulo}</h3>
+                        <h2>{servico.titulo}</h2>
                         <p>{servico.descricao}</p>
                     </article>
                 ))}

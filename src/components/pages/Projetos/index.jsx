@@ -53,11 +53,11 @@ const projetos = [
 function Projetos() {
     return (
         <section className={styles.projetos}>
-            <h2>Projetos</h2>
+            <h1>Projetos</h1>
             <div className={styles.lista}>
                 {projetos.map((projeto) => (
                     <article key={projeto.titulo} className={styles.card}>
-                        <h3>{projeto.titulo}</h3>
+                        <h2>{projeto.titulo}</h2>
                         <p className={styles.problema}>{projeto.problema}</p>
                         <p>{projeto.feito}</p>
                         {projeto.imagem && (

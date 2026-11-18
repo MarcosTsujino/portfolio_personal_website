@@ -15,6 +15,8 @@ function Calculadora() {
     const [avisos, setAvisos] = useState([])
     const [origem, setOrigem] = useState('')
     const [erro, setErro] = useState('')
+    // arquivo esperando a pessoa dizer se as vírgulas são decimais
+    const [pendente, setPendente] = useState(null)
     // os limites ficam como texto: o campo pode estar vazio enquanto a pessoa digita
     const [textoMin, setTextoMin] = useState('2')
     const [textoMax, setTextoMax] = useState('8')
@@ -25,8 +27,17 @@ function Calculadora() {
     const resumo = useMemo(() => resumir(leituras), [leituras])
     const resultado = useMemo(() => calcular(leituras, limiteA, limiteB, resumo), [leituras, limiteA, limiteB, resumo])
 
-    const carregar = (texto, nome) => {
-        const lido = lerCsv(texto)
+    const carregar = (texto, nome, virgula) => {
+        const lido = lerCsv(texto, { virgula })
+        if (lido.ambiguo) {
+            setLeituras([])
+            setOrigem('')
+            setAvisos([])
+            setErro('')
+            setPendente({ texto, nome })
+            return
+        }
+        setPendente(null)
         if (lido.erro || lido.leituras.length === 0) {
             setLeituras([])
             setOrigem('')
@@ -53,7 +64,7 @@ function Calculadora() {
 
     return (
         <section className={styles.calculadora}>
-            <h2>Calculadora de temperatura e MKT</h2>
+            <h1>Calculadora de temperatura e MKT</h1>
             <p className={styles.intro}>
                 Carregue um CSV com as leituras de um datalogger (data/hora e temperatura em °C) ou use os dados de
                 exemplo. Tudo é processado no seu navegador: o arquivo não é enviado para lugar nenhum.
@@ -75,6 +86,24 @@ function Calculadora() {
             </p>
 
             {erro && <p className={styles.erro} role="alert">{erro}</p>}
+
+            {pendente && (
+                <div className={styles.pergunta} role="alert">
+                    <p>
+                        No arquivo <strong>{pendente.nome}</strong>, as vírgulas podem separar colunas ou casas
+                        decimais: uma linha como <code>2026-01-12 08:00,5,3</code> pode ser 5,3 °C ou duas
+                        colunas (5 e 3). Como as vírgulas são usadas?
+                    </p>
+                    <div className={styles.controles}>
+                        <button type="button" className={styles.botaoSecundario} onClick={() => carregar(pendente.texto, pendente.nome, 'decimal')}>
+                            São decimais (5,3 °C)
+                        </button>
+                        <button type="button" className={styles.botaoSecundario} onClick={() => carregar(pendente.texto, pendente.nome, 'colunas')}>
+                            Separam colunas (5 e 3)
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {leituras.length > 0 && (
                 <>

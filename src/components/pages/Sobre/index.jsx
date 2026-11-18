@@ -20,7 +20,7 @@ function Sobre() {
         <section className={styles.sobre}>
             <div className={styles.banner}>
                 <div className={styles.texto}>
-                    <h2>Sobre</h2>
+                    <h1>Sobre</h1>
 
                     <p>
                         Olá! Sou o Marcos, desenvolvedor em formação com base sólida em eletrônica e
@@ -52,7 +52,7 @@ function Sobre() {
                         Baixar currículo (PDF)
                     </a>
 
-                    <h3 className={styles.subtitulo}>Ferramentas</h3>
+                    <h2 className={styles.subtitulo}>Ferramentas</h2>
                     <dl className={styles.ferramentas}>
                         {ferramentas.map((grupo) => (
                             <div key={grupo.titulo} className={styles.grupo}>

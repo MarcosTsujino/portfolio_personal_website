@@ -33,6 +33,23 @@
     color: var(--red);
 }
 
+/* contorno visível para quem navega com o teclado */
+.header a:focus-visible,
+.menuButton:focus-visible {
+    outline: 2px solid var(--white);
+    outline-offset: 3px;
+}
+
+/* o botão só aparece no celular. No computador ele continua ocupando o espaço
+   (o layout space-around conta com ele), mas fica invisível e fora do teclado */
+.menuButton {
+    visibility: hidden;
+    width: 0;
+    background: none;
+    border: 0;
+    padding: 0;
+}
+
 
 
 
@@ -41,6 +58,7 @@
 /* menu sandwich */
 @media (max-width: 768px) {
     .menuButton {
+        visibility: visible;
         width: 30px;
         height: 30px;
         position: absolute;
@@ -86,17 +104,5 @@
 @media (max-width: 480px) {
     .show {
         width: 100%;
-    }
-    .header {
-        position: fixed;
-    }
-}
-
-@media (max-width: 425px) {
-    .show {
-        width: 100%;
-    }
-    .header {
-        position: fixed;
     }
 }
