@@ -176,3 +176,17 @@ section.calculadora p {
     font-size: 0.85rem;
     color: #666;
 }
+
+section.calculadora .aviso {
+    margin: 0 0 1rem;
+    padding: 0.6rem 0.9rem;
+    border-left: 4px solid #d9a400;
+    background-color: #fff8e1;
+    border-radius: 4px;
+}
+
+.parcial {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: normal;
+}

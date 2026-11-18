@@ -119,3 +119,17 @@
     }
   }
   
+
+.contato .reserva {
+    margin: 1rem 0 0;
+    padding: 0.6rem 0.9rem;
+    border-left: 4px solid #d9a400;
+    background-color: #fff8e1;
+    border-radius: 4px;
+    text-align: left;
+}
+
+.contato .reserva a {
+    color: #1a7f37;
+    font-weight: bold;
+}
