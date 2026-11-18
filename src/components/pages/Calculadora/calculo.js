@@ -2,10 +2,11 @@
 const DELTA_H_SOBRE_R = 10000
 const KELVIN = 273.15
 
-export function parseNumero(texto, decimalVirgula) {
-    const limpo = texto.trim().replace(/^"|"$/g, '')
+// Aceita ponto ou vírgula como separador decimal ("5.3" ou "5,3")
+export function parseNumero(texto) {
+    const limpo = (texto ?? '').trim().replace(/^"|"$/g, '')
     if (limpo === '') return NaN
-    const normal = decimalVirgula ? limpo.replace(',', '.') : limpo
+    const normal = limpo.replace(',', '.')
     if (!/^[-+]?\d+(\.\d+)?$/.test(normal)) return NaN
     return Number(normal)
 }
@@ -24,16 +25,64 @@ export function parseData(texto) {
     return Number.isNaN(data.getTime()) ? null : data
 }
 
+// Divide uma linha pelo separador, respeitando campos entre aspas ("5,3")
+export function dividirLinha(linha, separador) {
+    const campos = []
+    let atual = ''
+    let entreAspas = false
+    for (const c of linha) {
+        if (c === '"') entreAspas = !entreAspas
+        else if (c === separador && !entreAspas) {
+            campos.push(atual)
+            atual = ''
+        } else atual += c
+    }
+    campos.push(atual)
+    return campos
+}
+
+// O separador é o que aparece na maioria das linhas: ";" e tabulação ganham de ","
+export function detectarSeparador(linhas) {
+    for (const candidato of [';', '\t']) {
+        const comCandidato = linhas.filter((l) => l.includes(candidato)).length
+        if (comCandidato > linhas.length / 2) return candidato
+    }
+    return ','
+}
+
+const ehInteiro = (texto) => /^[-+]?\d+$/.test((texto ?? '').trim())
+
 // Uma leitura por linha; temperatura na última coluna; data/hora na primeira (opcional)
 export function lerCsv(texto) {
     const linhas = texto.split(/\r?\n/).filter((l) => l.trim() !== '')
-    const usaPontoEVirgula = linhas.some((l) => l.includes(';'))
-    const separador = usaPontoEVirgula ? ';' : ','
+    const separador = detectarSeparador(linhas)
+    const avisos = []
+    if (linhas.length === 0) return { leituras: [], ignoradas: 0, avisos }
+
+    let tabela = linhas.map((l) => dividirLinha(l, separador))
+    const temCabecalho = Number.isNaN(parseNumero(tabela[0][tabela[0].length - 1]))
+
+    // CSV com vírgula como separador E como decimal, sem aspas: "data,5,3".
+    // Se o cabeçalho tem uma coluna a menos que os dados, as duas últimas formam o número.
+    if (separador === ',' && temCabecalho) {
+        const colunasCabecalho = tabela[0].length
+        const dados = tabela.slice(1)
+        const juntar = dados.length > 0 && dados.every(
+            (c) => c.length === colunasCabecalho + 1 && ehInteiro(c[c.length - 2]) && /^\d+$/.test(c[c.length - 1].trim()),
+        )
+        if (juntar) {
+            tabela = [tabela[0], ...dados.map((c) => [...c.slice(0, -2), `${c[c.length - 2]}.${c[c.length - 1].trim()}`])]
+            avisos.push('As temperaturas usam vírgula decimal no mesmo arquivo separado por vírgulas; interpretei "5,3" como 5,3 °C.')
+        }
+    } else if (separador === ',' && tabela.length > 0 && tabela.every((c) => c.length >= 3 && ehInteiro(c[c.length - 1]) && ehInteiro(c[c.length - 2]))) {
+        avisos.push('As duas últimas colunas são números inteiros. Se a temperatura usa vírgula decimal, salve o CSV com ponto e vírgula como separador ou com o valor entre aspas.')
+    }
+
     const leituras = []
     let ignoradas = 0
-    for (let i = 0; i < linhas.length; i += 1) {
-        const colunas = linhas[i].split(separador)
-        const temp = parseNumero(colunas[colunas.length - 1], usaPontoEVirgula)
+    for (let i = 0; i < tabela.length; i += 1) {
+        const colunas = tabela[i]
+        const temp = parseNumero(colunas[colunas.length - 1])
         if (Number.isNaN(temp)) {
             // a primeira linha inválida costuma ser o cabeçalho: não conta como erro
             if (i > 0) ignoradas += 1
@@ -42,7 +91,7 @@ export function lerCsv(texto) {
         const data = colunas.length > 1 ? parseData(colunas[0]) : null
         leituras.push({ temp, data })
     }
-    return { leituras, ignoradas }
+    return { leituras, ignoradas, avisos }
 }
 
 export function calcularMkt(temps) {
@@ -51,9 +100,12 @@ export function calcularMkt(temps) {
     return -DELTA_H_SOBRE_R / Math.log(soma / temps.length) - KELVIN
 }
 
-export function calcular(leituras, limMin, limMax) {
+export function calcular(leituras, limiteA, limiteB) {
     const n = leituras.length
-    if (n === 0) return null
+    if (n === 0 || !Number.isFinite(limiteA) || !Number.isFinite(limiteB)) return null
+    // aceita os limites em qualquer ordem
+    const limMin = Math.min(limiteA, limiteB)
+    const limMax = Math.max(limiteA, limiteB)
 
     let min = Infinity
     let max = -Infinity
@@ -76,6 +128,14 @@ export function calcular(leituras, limMin, limMax) {
     }
 
     const datas = leituras.map((l) => l.data).filter(Boolean)
+    let emOrdem = true
+    for (let i = 1; i < datas.length; i += 1) {
+        if (datas[i] < datas[i - 1]) emOrdem = false
+    }
+    // reduce em vez de Math.min(...): arquivos grandes estourariam o limite de argumentos
+    const tempos = datas.map((d) => d.getTime())
+    const primeiro = tempos.reduce((a, b) => (b < a ? b : a), Infinity)
+    const ultimo = tempos.reduce((a, b) => (b > a ? b : a), -Infinity)
     return {
         n,
         min,
@@ -86,8 +146,13 @@ export function calcular(leituras, limMin, limMax) {
         fora: n - dentro,
         percentualDentro: (dentro / n) * 100,
         excursoes,
-        inicio: datas.length ? datas[0] : null,
-        fim: datas.length ? datas[datas.length - 1] : null,
+        limMin,
+        limMax,
+        limitesInvertidos: limiteA > limiteB,
+        comData: datas.length,
+        emOrdem,
+        inicio: datas.length ? new Date(primeiro) : null,
+        fim: datas.length ? new Date(ultimo) : null,
     }
 }
 

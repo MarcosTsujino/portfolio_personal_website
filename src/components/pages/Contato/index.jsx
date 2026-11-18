@@ -7,6 +7,7 @@ function Contato() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
+  const [linkReserva, setLinkReserva] = useState('')
 
   const sendWhatsAppMessage = (e) => {
     e.preventDefault()
@@ -16,12 +17,19 @@ function Contato() {
 
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`
 
-    window.open(url, '_blank', 'noopener,noreferrer')
-
-
-    setName('')
-    setEmail('')
-    setMessage('')
+    // Com 'noopener' nas opções o window.open sempre devolve null, então não daria
+    // para saber se o pop-up foi bloqueado. Abre sem a opção e corta o vínculo à mão.
+    const janela = window.open(url, '_blank')
+    if (janela) {
+      janela.opener = null
+      setLinkReserva('')
+      setName('')
+      setEmail('')
+      setMessage('')
+    } else {
+      // pop-up bloqueado: mantém o texto e oferece o link
+      setLinkReserva(url)
+    }
   }
 
   return (
@@ -75,6 +83,13 @@ function Contato() {
             Enviar pelo WhatsApp
           </button>
         </form>
+
+        {linkReserva && (
+          <p className={styles.reserva} role="alert">
+            O navegador bloqueou a abertura do WhatsApp. Sua mensagem continua no formulário;{' '}
+            <a href={linkReserva} target="_blank" rel="noopener noreferrer">clique aqui para abrir o WhatsApp</a>.
+          </p>
+        )}
 
         {/* Ícones de contato */}
         <div className={styles.icones}>
