@@ -11,6 +11,13 @@ export function parseNumero(texto) {
     return Number(normal)
 }
 
+// Limite digitado pela pessoa: aceita "2", "2,5", "2.5" e também "2," no meio da
+// digitação, para os resultados não piscarem; vazio ou inválido vira NaN
+export function lerLimite(texto) {
+    const normal = texto.trim().replace(',', '.')
+    return /^[-+]?\d+(\.\d*)?$/.test(normal) ? Number(normal) : NaN
+}
+
 // Aceita "2026-01-12 08:00:00", "2026/01/12 08:00" e "12/01/2026 08:00:00"
 export function parseData(texto) {
     const limpo = texto.trim().replace(/^"|"$/g, '')
@@ -51,6 +58,48 @@ export function detectarSeparador(linhas) {
 }
 
 const ehInteiro = (texto) => /^[-+]?\d+$/.test((texto ?? '').trim())
+const ehFracao = (texto) => /^\d+$/.test((texto ?? '').trim())
+const terminaComDoisInteiros = (c) => c.length >= 2 && ehInteiro(c[c.length - 2]) && ehFracao(c[c.length - 1])
+
+export const ERRO_VIRGULA_AMBIGUA =
+    'Não consegui saber se as vírgulas do arquivo separam colunas ou casas decimais. Salve o CSV com ponto e vírgula como separador (ou com as temperaturas entre aspas) e carregue de novo.'
+
+// Decide, linha a linha, se as duas últimas colunas formam um número com vírgula decimal.
+// A largura "normal" vem do cabeçalho; sem cabeçalho, da linha mais estreita.
+// Uma linha com exatamente uma coluna a mais e "inteiro,inteiro" no fim é vírgula decimal.
+// Qualquer coisa que não dê para decidir com segurança vira erro: melhor não calcular
+// do que mostrar uma temperatura errada.
+export function resolverVirgulaDecimal(tabela, temCabecalho) {
+    const inicioDados = temCabecalho ? 1 : 0
+    const dados = tabela.slice(inicioDados)
+    if (dados.length === 0) return { tabela, juntadas: 0 }
+
+    const larguras = dados.map((c) => c.length)
+    const menor = larguras.reduce((a, b) => (b < a ? b : a), Infinity)
+    const base = temCabecalho ? tabela[0].length : menor
+    const larguraUniforme = larguras.every((w) => w === menor)
+
+    // Sem cabeçalho e com todas as linhas da mesma largura, "x,5,3" pode ser 5,3 °C
+    // ou duas colunas inteiras. Não há como saber.
+    if (!temCabecalho && larguraUniforme && dados.some(terminaComDoisInteiros)) {
+        return { erro: ERRO_VIRGULA_AMBIGUA }
+    }
+
+    let juntadas = 0
+    const novosDados = []
+    for (const c of dados) {
+        if (c.length <= base) {
+            novosDados.push(c)
+        } else if (c.length === base + 1 && terminaComDoisInteiros(c)) {
+            novosDados.push([...c.slice(0, -2), `${c[c.length - 2].trim()}.${c[c.length - 1].trim()}`])
+            juntadas += 1
+        } else {
+            // duas ou mais colunas sobrando: outra coluna também tem vírgula decimal
+            return { erro: ERRO_VIRGULA_AMBIGUA }
+        }
+    }
+    return { tabela: [...tabela.slice(0, inicioDados), ...novosDados], juntadas }
+}
 
 // Uma leitura por linha; temperatura na última coluna; data/hora na primeira (opcional)
 export function lerCsv(texto) {
@@ -62,20 +111,16 @@ export function lerCsv(texto) {
     let tabela = linhas.map((l) => dividirLinha(l, separador))
     const temCabecalho = Number.isNaN(parseNumero(tabela[0][tabela[0].length - 1]))
 
-    // CSV com vírgula como separador E como decimal, sem aspas: "data,5,3".
-    // Se o cabeçalho tem uma coluna a menos que os dados, as duas últimas formam o número.
-    if (separador === ',' && temCabecalho) {
-        const colunasCabecalho = tabela[0].length
-        const dados = tabela.slice(1)
-        const juntar = dados.length > 0 && dados.every(
-            (c) => c.length === colunasCabecalho + 1 && ehInteiro(c[c.length - 2]) && /^\d+$/.test(c[c.length - 1].trim()),
-        )
-        if (juntar) {
-            tabela = [tabela[0], ...dados.map((c) => [...c.slice(0, -2), `${c[c.length - 2]}.${c[c.length - 1].trim()}`])]
-            avisos.push('As temperaturas usam vírgula decimal no mesmo arquivo separado por vírgulas; interpretei "5,3" como 5,3 °C.')
+    // CSV separado por vírgula com vírgula decimal sem aspas: "data,5,3".
+    if (separador === ',') {
+        const resolvido = resolverVirgulaDecimal(tabela, temCabecalho)
+        if (resolvido.erro) return { leituras: [], ignoradas: 0, avisos, erro: resolvido.erro }
+        tabela = resolvido.tabela
+        if (resolvido.juntadas > 0) {
+            avisos.push(
+                `O arquivo usa vírgula tanto para separar colunas quanto como decimal; interpretei ${resolvido.juntadas} valor(es) como "5,3" = 5,3 °C.`,
+            )
         }
-    } else if (separador === ',' && tabela.length > 0 && tabela.every((c) => c.length >= 3 && ehInteiro(c[c.length - 1]) && ehInteiro(c[c.length - 2]))) {
-        avisos.push('As duas últimas colunas são números inteiros. Se a temperatura usa vírgula decimal, salve o CSV com ponto e vírgula como separador ou com o valor entre aspas.')
     }
 
     const leituras = []
@@ -100,48 +145,71 @@ export function calcularMkt(temps) {
     return -DELTA_H_SOBRE_R / Math.log(soma / temps.length) - KELVIN
 }
 
-export function calcular(leituras, limiteA, limiteB) {
+// Tudo o que não depende dos limites: calculado uma vez por arquivo, não a cada tecla
+export function resumir(leituras) {
     const n = leituras.length
-    if (n === 0 || !Number.isFinite(limiteA) || !Number.isFinite(limiteB)) return null
-    // aceita os limites em qualquer ordem
-    const limMin = Math.min(limiteA, limiteB)
-    const limMax = Math.max(limiteA, limiteB)
-
+    if (n === 0) return null
     let min = Infinity
     let max = -Infinity
     let total = 0
-    let dentro = 0
-    let excursoes = 0
-    let estavaFora = false
     const temps = new Array(n)
-
     for (let i = 0; i < n; i += 1) {
         const t = leituras[i].temp
         temps[i] = t
         if (t < min) min = t
         if (t > max) max = t
         total += t
-        const ok = t >= limMin && t <= limMax
-        if (ok) dentro += 1
-        if (!ok && !estavaFora) excursoes += 1
-        estavaFora = !ok
     }
 
-    const datas = leituras.map((l) => l.data).filter(Boolean)
+    let comData = 0
     let emOrdem = true
-    for (let i = 1; i < datas.length; i += 1) {
-        if (datas[i] < datas[i - 1]) emOrdem = false
+    let anterior = -Infinity
+    // laço simples em vez de Math.min(...): arquivos grandes estourariam o limite de argumentos
+    let primeiro = Infinity
+    let ultimo = -Infinity
+    for (const { data } of leituras) {
+        if (!data) continue
+        const t = data.getTime()
+        comData += 1
+        if (t < anterior) emOrdem = false
+        anterior = t
+        if (t < primeiro) primeiro = t
+        if (t > ultimo) ultimo = t
     }
-    // reduce em vez de Math.min(...): arquivos grandes estourariam o limite de argumentos
-    const tempos = datas.map((d) => d.getTime())
-    const primeiro = tempos.reduce((a, b) => (b < a ? b : a), Infinity)
-    const ultimo = tempos.reduce((a, b) => (b > a ? b : a), -Infinity)
+
     return {
         n,
         min,
         max,
         media: total / n,
         mkt: calcularMkt(temps),
+        comData,
+        emOrdem,
+        inicio: comData ? new Date(primeiro) : null,
+        fim: comData ? new Date(ultimo) : null,
+    }
+}
+
+// Parte que depende dos limites: um laço de comparações, barato a cada tecla
+export function calcular(leituras, limiteA, limiteB, resumo = resumir(leituras)) {
+    if (!resumo || !Number.isFinite(limiteA) || !Number.isFinite(limiteB)) return null
+    // aceita os limites em qualquer ordem
+    const limMin = Math.min(limiteA, limiteB)
+    const limMax = Math.max(limiteA, limiteB)
+
+    let dentro = 0
+    let excursoes = 0
+    let estavaFora = false
+    for (const { temp } of leituras) {
+        const ok = temp >= limMin && temp <= limMax
+        if (ok) dentro += 1
+        if (!ok && !estavaFora) excursoes += 1
+        estavaFora = !ok
+    }
+
+    const n = resumo.n
+    return {
+        ...resumo,
         dentro,
         fora: n - dentro,
         percentualDentro: (dentro / n) * 100,
@@ -149,10 +217,6 @@ export function calcular(leituras, limiteA, limiteB) {
         limMin,
         limMax,
         limitesInvertidos: limiteA > limiteB,
-        comData: datas.length,
-        emOrdem,
-        inicio: datas.length ? new Date(primeiro) : null,
-        fim: datas.length ? new Date(ultimo) : null,
     }
 }
 
