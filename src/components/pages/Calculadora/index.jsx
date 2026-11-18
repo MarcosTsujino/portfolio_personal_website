@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Grafico from './Grafico'
 import { calcular, gerarExemplo, lerCsv, lerLimite, resumir } from './calculo'
 import styles from './Calculadora.module.css'
@@ -17,6 +17,12 @@ function Calculadora() {
     const [erro, setErro] = useState('')
     // arquivo esperando a pessoa dizer se as vírgulas são decimais
     const [pendente, setPendente] = useState(null)
+    const perguntaRef = useRef(null)
+
+    // a pergunta bloqueia o fluxo: leva o foco até ela para o leitor de tela e o teclado
+    useEffect(() => {
+        if (pendente) perguntaRef.current?.focus()
+    }, [pendente])
     // os limites ficam como texto: o campo pode estar vazio enquanto a pessoa digita
     const [textoMin, setTextoMin] = useState('2')
     const [textoMax, setTextoMax] = useState('8')
@@ -88,8 +94,14 @@ function Calculadora() {
             {erro && <p className={styles.erro} role="alert">{erro}</p>}
 
             {pendente && (
-                <div className={styles.pergunta} role="alert">
-                    <p>
+                <div
+                    className={styles.pergunta}
+                    role="group"
+                    aria-labelledby="pergunta-virgula"
+                    tabIndex={-1}
+                    ref={perguntaRef}
+                >
+                    <p id="pergunta-virgula">
                         No arquivo <strong>{pendente.nome}</strong>, as vírgulas podem separar colunas ou casas
                         decimais: uma linha como <code>2026-01-12 08:00,5,3</code> pode ser 5,3 °C ou duas
                         colunas (5 e 3). Como as vírgulas são usadas?
